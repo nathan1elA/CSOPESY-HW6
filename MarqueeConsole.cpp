@@ -21,7 +21,6 @@
         return ch;
     }
 
-    // currently does not work correctly
     bool _kbhit() {
         termios term;
         tcgetattr(0, &term); // Get current terminal settings
@@ -44,7 +43,7 @@ ConsoleDimensions getConsoleDimensions() {
         GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
         return {
             csbi.srWindow.Right  - csbi.srWindow.Left + 1,
-            csbi.srWindow.Bottom - csbi.srWindow.Top  + 2
+            csbi.srWindow.Bottom - csbi.srWindow.Top  + 1
         };
     #else
         struct winsize w;
@@ -71,7 +70,7 @@ void MarqueeConsole::run() {
         while(!_kbhit()){
             currentDimensions = getConsoleDimensions();
     
-             std::cout << "\033[H";
+            std::cout << "\033[2J\033[H";
     
             for (int i = 0; i < (currentDimensions.height + 1) / splitFactor; i++) {
                 std::cout << "\033[2K\n";
@@ -91,7 +90,7 @@ void MarqueeConsole::run() {
                 vDirection = 1;
             }
             
-            if (row >= currentDimensions.height / splitFactor) {
+            if (row >= currentDimensions.height / splitFactor - 1) {
                 vDirection = -1;
             }
     
@@ -123,21 +122,17 @@ void MarqueeConsole::run() {
         }
         
         
-        if (_kbhit()) {
-            ch = _getch();
+        ch = _getch();
 
-            if (ch == '\r' || ch == '\n') {
-                std::cout << std::endl;
-                executeCommand(cmd);
-                cmd = "";
-            } else if (ch == 127 || ch == '\b') {
-                if (!cmd.empty()) {
-                    cmd.pop_back();
-                    std::cout << "\b \b" << std::flush;
-                }
-            } else {
-                cmd += ch;
+        if (ch == '\r' || ch == '\n') {
+            executeCommand(cmd);
+            cmd = "";
+        } else if (ch == 8 || ch == 127 || ch == '\b') {
+            if (!cmd.empty()) {
+                cmd.pop_back();
             }
+        } else {
+            cmd += ch;
         }
     }
 }
