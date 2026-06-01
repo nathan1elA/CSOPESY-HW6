@@ -24,7 +24,19 @@ void MainConsole::display() {
               << R"(| /  \/\ `--. | | | | |_/ / |__ \ `--. \ V /)" << std::endl
               << R"(| |     `--. \| | | |  __/|  __| `--. \ \ /)" << std::endl
               << R"(| \__/\/\__/ /\ \_/ / |   | |___/\__/ / | |)" << std::endl
-              << R"( \____/\____/  \___/\_|   \____/\____/  \_/)" << std::endl;
+              << R"( \____/\____/  \___/\_|   \____/\____/  \_/)" << std::endl
+              << "----------------------------------------------" << std::endl
+              << "Welcome to CSOPESY Emulator!                  " << std::endl
+              << "                                              " << std::endl
+              << "Developers:                                   " << std::endl
+              << "Adiong, Nathaniel Irvin L.                    " << std::endl
+              << "Ang, Clarence Ivan C.                         " << std::endl
+              << "Go, Kenneth D.                                " << std::endl
+              << "Trocino, Job D.                               " << std::endl
+              << "                                              " << std::endl
+              << "Last updated: 06-01-2026                      " << std::endl
+              << "----------------------------------------------" << std::endl              
+              ;
 }
 
 void MainConsole::executeCommand(std::string cmd) {

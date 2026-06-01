@@ -15,4 +15,4 @@ int main() {
     std::cout << "Program stopped successfully.\n";
 
     return 0;
-}
+};
