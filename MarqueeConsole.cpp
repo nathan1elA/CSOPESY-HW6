@@ -21,6 +21,7 @@
         return ch;
     }
 
+    // backspace does not work
     bool _kbhit() {
         termios term;
         tcgetattr(0, &term); // Get current terminal settings
@@ -67,66 +68,65 @@ void MarqueeConsole::run() {
     running = true; 
 
     while (running) {
-        while(!_kbhit()){
-            currentDimensions = getConsoleDimensions();
-    
-            std::cout << "\033[2J\033[H";
-    
-            for (int i = 0; i < (currentDimensions.height + 1) / splitFactor; i++) {
-                if (row == i) {
-                    std::cout << text << std::endl;
-                } else {
-                    std::cout << std::endl;
-                }
-            }
-            
-            if (row == 0) {
-                vDirection = 1;
-            }
-            
-            if (row >= currentDimensions.height / splitFactor - 1) {
-                vDirection = -1;
-            }
-    
-            if (text.length() == originalLength) {
-                hDirection = 1;
-            }
-            
-            if (text.length() >= currentDimensions.width) {
-                hDirection = -1;
-            }
-            
-            row += vDirection;
-            
-            if (hDirection == 1) {
-                text = " " + text;
+        currentDimensions = getConsoleDimensions();
+
+        std::cout << "\033[2J\033[H";
+
+        for (int i = 0; i < (currentDimensions.height + 1) / splitFactor; i++) {
+            if (row == i) {
+                std::cout << text << std::endl;
             } else {
-                text.erase(0, 1);
+                std::cout << std::endl;
             }
-
-            std::cout << "Enter a command: " << std::flush;
-            
-            std::cout << cmd << std::endl << std::flush;
-
-            for (int i = 0; i < consoleHistory.size(); i++) {
-                std::cout << consoleHistory.at(i) << std::endl << std::flush;
-            }
-            
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         
+        if (row == 0) {
+            vDirection = 1;
+        }
         
-        ch = _getch();
+        if (row >= currentDimensions.height / splitFactor - 1) {
+            vDirection = -1;
+        }
 
-        if (ch == '\r' || ch == '\n') {
-            executeCommand(cmd);
-            cmd = "";
-        } else if (ch == 8 || ch == 127 || ch == '\b') {
-            if (!cmd.empty()) {
-                cmd.pop_back();
-            }
+        if (text.length() == originalLength) {
+            hDirection = 1;
+        }
+        
+        if (text.length() >= currentDimensions.width) {
+            hDirection = -1;
+        }
+        
+        row += vDirection;
+        
+        if (hDirection == 1) {
+            text = " " + text;
         } else {
-            cmd += ch;
+            text.erase(0, 1);
+        }
+
+        std::cout << "Enter a command: " << std::flush;
+        
+        std::cout << cmd << std::endl << std::flush;
+
+        for (int i = 0; i < consoleHistory.size(); i++) {
+            std::cout << consoleHistory.at(i) << std::endl << std::flush;
+        }
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        
+        if (_kbhit()) {
+            ch = _getch();
+
+            if (ch == '\r' || ch == '\n') {
+                executeCommand(cmd);
+                cmd = "";
+            } else if (ch == 8 || ch == 127 || ch == '\b') {
+                if (!cmd.empty()) {
+                    cmd.pop_back();
+                }
+            } else {
+                cmd += ch;
+            }
         }
     }
 }
