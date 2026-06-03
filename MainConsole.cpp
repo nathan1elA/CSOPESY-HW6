@@ -39,7 +39,7 @@ void MainConsole::display() {
               << "Go, Kenneth D.                                " << std::endl
               << "Trocino, Job D.                               " << std::endl
               << "                                              " << std::endl
-              << "Last updated: 06-01-2026                      " << std::endl
+              << "Last updated: 06-03-2026                      " << std::endl
               << "----------------------------------------------" << std::endl              
               ;
 }
@@ -81,23 +81,25 @@ void MainConsole::initialize() {
         return;
     }
 
-    config.clear();
-
     while (std::getline(file, line)) {
         std::stringstream ss(line);
 
         std::string key, value;
 
         if (ss >> key >> value) {
-            config[key] = value;
+            if (key == "num-cpu") gl_numCpu = std::stoi(value);
+            if (key == "scheduler") {
+                value.erase(0, 1);
+                value.erase(value.length() - 1, 1);
+                gl_schedulerType = value;
+            }
+            if (key == "quantum-cycles") gl_quantumCycles = std::stoi(value);
+            if (key == "batch-process-freq") gl_batchProcessFreq = std::stoi(value);
+            if (key == "min-ins") gl_minIns = std::stoi(value);
+            if (key == "max-ins") gl_maxIns = std::stoi(value);
+            if (key == "delays-per-exec") gl_delaysPerExec = std::stoi(value);
         }
     }
 
     initializeFlag = true;
-
-    // only used to test config
-    // std::cout << "Configuration:\n";
-    // for (const auto& [key, value] : config) {
-    //     std::cout << key << " = " << value << '\n';
-    // }
 }

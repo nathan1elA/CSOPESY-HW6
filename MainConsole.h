@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Console.h"
+#include "config.h"
 
 class MainConsole : public Console {
     public:
@@ -10,7 +11,6 @@ class MainConsole : public Console {
         void run() override;
     private:
         bool initializeFlag = false;
-        std::unordered_map<std::string, std::string> config;
 
         void executeCommand(std::string cmd) override;
         void display();
