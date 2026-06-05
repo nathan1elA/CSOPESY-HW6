@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Console.h"
-#include "config.h"
+#include "globals.h"
 
 class MainConsole : public Console {
     public:

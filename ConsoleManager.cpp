@@ -25,7 +25,9 @@ void ConsoleManager::destroy() {
 }
 
 void ConsoleManager::run() {
-    currentConsole->run();
+    while (running) {
+        currentConsole->run();
+    }
 }
 
 bool ConsoleManager::isRunning() {
