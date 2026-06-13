@@ -5,9 +5,9 @@ ConsoleManager::ConsoleManager() {
     running = true;
 
     consoleTable[MAIN_CONSOLE] = std::make_shared<MainConsole>();
-    consoleTable[MARQUEE_CONSOLE] = std::make_shared<MarqueeConsole>();
 
     currentConsole = consoleTable[MAIN_CONSOLE];
+    currentConsole->setRunning(true);
 }
 
 ConsoleManager* ConsoleManager::singleton = nullptr;
@@ -44,8 +44,30 @@ bool ConsoleManager::isRunning() {
     return running;
 }
 
-void ConsoleManager::switchConsole(ConsoleType console) {
-    currentConsole = consoleTable[console];
+bool ConsoleManager::registerScreen(std::string consoleName, bool isSwitch) {
+    if (consoleTable.contains(consoleName)) {
+        std::cerr << "Error: Screen " << consoleName << " already exists." << std::endl;
+        return false;
+    }
+
+    consoleTable[consoleName] = std::make_shared<Screen>(consoleName);
+
+    if (isSwitch) {
+        switchConsole(consoleName);
+    }
+
+    return true;
+}
+
+void ConsoleManager::switchConsole(std::string consoleName) {
+    if (!consoleTable.contains(consoleName)) {
+        std::cerr << "Error: Screen " << consoleName << " not registered." << std::endl;
+        return;
+    }
+
+    currentConsole->setRunning(false);
+    currentConsole = consoleTable[consoleName];
+    currentConsole->setRunning(true);
 }
 
 void ConsoleManager::terminate() {

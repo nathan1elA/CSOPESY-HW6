@@ -1,5 +1,9 @@
-main
-main.exe
 .vscode
-.claude/
-app.exe
+.claude
+
+src/app
+src/app.exe
+src/cmake_install.cmake
+src/CMakeCache.txt
+src/Makefile
+src/CMakeFiles

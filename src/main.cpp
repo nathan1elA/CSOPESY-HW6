@@ -1,24 +1,23 @@
+#include "globals.h"
 #include "ConsoleManager.h"
+#include "Scheduler.h"
 
 int main() {
     ConsoleManager::initialize();
-    gl_cpuCycles = 0;
-    gl_processCount = 0;
+    Scheduler::initialize();
     bool running = true;
 
     ConsoleManager::getInstance()->start();
 
     while (running) {
         running = ConsoleManager::getInstance()->isRunning();
-        
-        gl_cpuCycles++;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     ConsoleManager::getInstance()->stop();
+    Scheduler::getInstance()->stop();
     ConsoleManager::destroy();
+    Scheduler::destroy();
 
-    std::cout << "CPU Cycles elapsed: " << gl_cpuCycles << std::endl;
     std::cout << "Program stopped successfully.\n";
 
     return 0;

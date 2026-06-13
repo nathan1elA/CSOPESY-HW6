@@ -1,25 +1,15 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <thread>
-#include <chrono>
-#include <atomic>
-#include <unordered_map>
-#include <memory>
-
+#include "globals.h"
 #include "Console.h"
 #include "MainConsole.h"
-#include "MarqueeConsole.h"
+#include "Screen.h"
 
 class Console;
 
-enum ConsoleType {
-    MAIN_CONSOLE,
-    MARQUEE_CONSOLE
-};
+const std::string MAIN_CONSOLE = "MAIN_CONSOLE";
 
-using ConsoleTable = std::unordered_map<ConsoleType, std::shared_ptr<Console>>;
+using ConsoleTable = std::unordered_map<std::string, std::shared_ptr<Console>>;
 
 class ConsoleManager {
     public:
@@ -36,7 +26,8 @@ class ConsoleManager {
         ~ConsoleManager() = default;
 
         void run();
-        void switchConsole(ConsoleType console);
+        bool registerScreen(std::string consoleName, bool isSwitch);
+        void switchConsole(std::string consoleName);
         void terminate();
 
         bool running = false;
@@ -46,5 +37,6 @@ class ConsoleManager {
         std::shared_ptr<Console> currentConsole;
 
         friend class MainConsole;
-        friend class MarqueeConsole;
+        friend class Screen;
+        friend class Scheduler;
 };
