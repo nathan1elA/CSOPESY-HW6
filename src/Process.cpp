@@ -4,6 +4,16 @@ Process::Process(uint32_t processId, std::string name, uint8_t coreNumber) {
     this->processId = processId;
     this->name = name;
     this->coreNumber = coreNumber;
+    this->logFilePath = name + ".txt";
+
+    // ADD THIS BLOCK
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm tm{};
+    localtime_r(&t, &tm);
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%m/%d/%Y %I:%M:%S%p");
+    this->creationTime = oss.str();
 
     instructions = std::make_unique<InstructionQueue>();
     symbolTable = std::make_unique<SymbolTable>();
@@ -14,6 +24,10 @@ Process::Process(uint32_t processId, std::string name, uint8_t coreNumber) {
 
 void Process::executeInstruction() {
     std::unique_lock lock(mtx);
+    if (instructions->empty()) {
+        return;
+    }
+
     instructions->front()->execute();
 
     // checks whether instruction is FOR or SLEEP and is still running before removing the instruction
@@ -21,13 +35,17 @@ void Process::executeInstruction() {
         instructions->pop();
         lineNumber++;
     }
+
+    if (instructions->empty() && !logFileWritten) {
+        writeLogFile();
+    }
 }
 
 void Process::displayLog() {
     std::shared_lock lock(mtx);
     std::cout << "Logs:" << std::endl;
     for (const auto& log : *logger) {
-        std::cout << "(" << std::get<0>(log) << ") Core:" << static_cast<int>(coreNumber) << " \"" << std::get<1>(log) << "\"" << std::endl;
+        std::cout << "(" << std::get<0>(log) << ") Core:" << static_cast<int>(std::get<1>(log)) << " \"" << std::get<2>(log) << "\"" << std::endl;
     }
 }
 
@@ -45,15 +63,41 @@ std::string Process::getProcessName() {
 }
 
 uint32_t Process::getInstructionSize() {
-    return instructions->size();
+    return instructionCount;
 }
 
 uint32_t Process::getLineNumber() {
     return lineNumber;
 }
 
+uint8_t Process::getCoreNumber() {
+    return coreNumber;
+}
+
+void Process::writeLogFile() {
+    std::ofstream file(logFilePath, std::ios::trunc);
+
+    if (!file.is_open()) {
+        return;
+    }
+
+    file << "Process name: " << name << std::endl;
+    file << std::endl;
+    file << "Logs:" << std::endl;
+    file << std::endl;
+
+    for (const auto& log : *logger) {
+        file << "(" << std::get<0>(log) << ") Core:" << static_cast<int>(std::get<1>(log)) << " \"" << std::get<2>(log) << "\"" << std::endl;
+    }
+
+    logFileWritten = true;
+}
+
+std::string Process::getCreationTime() {
+    return creationTime;
+}
+
 void Process::generateInstructions() {
-    // temporary, replace with actual implementation later
     symbolTable->emplace("var1", 0);
     symbolTable->emplace("var2", 0);
     symbolTable->emplace("var3", 0);
@@ -61,24 +105,10 @@ void Process::generateInstructions() {
     symbolTable->emplace("var5", 0);
     symbolTable->emplace("var6", 0);
     
-    instructions->push(std::make_unique<IPrint>("Hello world from " + name + "!", *symbolTable, *logger));
-    instructions->push(std::make_unique<IDeclare>(symbolTable->at("var1"), 5));
-    instructions->push(std::make_unique<IDeclare>(symbolTable->at("var2"), 10));
-    instructions->push(std::make_unique<IDeclare>(symbolTable->at("var3"), 2));
-    instructions->push(std::make_unique<IAdd>(symbolTable->at("var4"), symbolTable->at("var1"), symbolTable->at("var2")));
-    instructions->push(std::make_unique<ISubtract>(symbolTable->at("var5"), symbolTable->at("var2"), symbolTable->at("var3")));
-    instructions->push(std::make_unique<IPrint>("var4", *symbolTable, *logger));
-    instructions->push(std::make_unique<IPrint>("var5", *symbolTable, *logger));
-    instructions->push(std::make_unique<ISleep>(10));
-
-    std::unique_ptr<ForLoop> forLoop1 = std::make_unique<ForLoop>();
-    std::unique_ptr<ForLoop> forLoop2 = std::make_unique<ForLoop>();
-
-    forLoop1->push_back(std::make_unique<IAdd>(symbolTable->at("var6"), symbolTable->at("var6"), symbolTable->at("var1")));
-    forLoop1->push_back(std::make_unique<IPrint>("var6", *symbolTable, *logger));
-    forLoop2->push_back(std::make_unique<IFor>(std::move(forLoop1), 2));
-    
-    instructions->push(std::make_unique<IFor>(std::move(forLoop2), 3));
+    for (uint32_t i = 0; i < 100; ++i) {
+        instructions->push(std::make_unique<IPrint>("Hello world from " + name + "!", *symbolTable, *logger, coreNumber));
+        instructionCount++;
+    }
 }
 
 /*

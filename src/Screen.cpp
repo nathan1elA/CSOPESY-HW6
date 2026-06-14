@@ -54,7 +54,6 @@ void Screen::executeCommand(const std::string& cmd) {
 
 void Screen::display() {
     std::cout << "Process name: " << process->getProcessName() << std::endl;
-    std::cout << "ID: " << process->getProcessId() << std::endl;
     std::cout << std::endl;
 }
 

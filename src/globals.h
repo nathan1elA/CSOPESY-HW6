@@ -9,9 +9,11 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 #include <unordered_map>
 #include <queue>
+#include <vector>
 #include <tuple>
 
 #include <thread>
@@ -26,7 +28,8 @@ enum SchedulerType {
 };
 
 using SymbolTable = std::unordered_map<std::string, uint16_t>;
-using Logger = std::vector<std::tuple<std::string, std::string>>;
+using LogEntry = std::tuple<std::string, uint8_t, std::string>;
+using Logger = std::vector<LogEntry>;
 
 struct Config {
     uint8_t numCpu;

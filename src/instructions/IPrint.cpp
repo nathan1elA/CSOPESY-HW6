@@ -1,7 +1,7 @@
 #include "IPrint.h"
 
-IPrint::IPrint(std::string msg, SymbolTable& symbolTable, Logger& logger) 
-    : msg(std::move(msg)), symbolTable(symbolTable), logger(logger) {}
+IPrint::IPrint(std::string msg, SymbolTable& symbolTable, Logger& logger, uint8_t coreNumber) 
+    : msg(std::move(msg)), symbolTable(symbolTable), logger(logger), coreNumber(coreNumber) {}
 
 void IPrint::execute() {
     std::string log;
@@ -28,5 +28,5 @@ void IPrint::execute() {
         log = msg;
     }
 
-    logger.emplace_back(oss.str(), log);
+    logger.emplace_back(oss.str(), coreNumber, log);
 }

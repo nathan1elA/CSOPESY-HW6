@@ -40,7 +40,7 @@ MainConsole::MainConsole() {
                     return;
                 }
 
-                // add behavior here
+                Scheduler::getInstance()->displayProcessList();
             }
         }},
 
@@ -50,7 +50,7 @@ MainConsole::MainConsole() {
                 return;
             }
 
-            std::cout << "scheduler-start command recognized. Doing something.\n"; 
+            Scheduler::getInstance()->start();
         }},
 
         { "scheduler-stop", [this](const auto& args) { 
@@ -59,7 +59,7 @@ MainConsole::MainConsole() {
                 return;
             }
             
-            std::cout << "scheduler-stop command recognized. Doing something.\n"; 
+            Scheduler::getInstance()->stop();
         }},
 
         { "report-util", [this](const auto& args) { 
@@ -95,6 +95,10 @@ MainConsole::MainConsole() {
 
 void MainConsole::run() {
     std::string cmd;
+    
+    if (!initializeFlag) {
+        initialize();
+    }
     
     std::cout << "\033[2J\033[H";
     display();
@@ -161,7 +165,15 @@ void MainConsole::executeCommand(const std::string& cmd) {
 }
 
 void MainConsole::initialize() {
-    std::ifstream file("config.txt");
+    if (initializeFlag) {
+        return;
+    }
+
+    std::ifstream file("src/config.txt");
+    if (!file.is_open()) {
+        file.open("config.txt");
+    }
+
     std::string line;
 
     if (!file.is_open()) {
@@ -184,9 +196,11 @@ void MainConsole::initialize() {
             if (key == "batch-process-freq") config.batchProcessFreq = std::stoi(value);
             if (key == "min-ins") config.minIns = std::stoi(value);
             if (key == "max-ins") config.maxIns = std::stoi(value);
+            if (key == "delay-per-exec") config.delaysPerExec = std::stoi(value);
             if (key == "delays-per-exec") config.delaysPerExec = std::stoi(value);
         }
     }
 
     initializeFlag = true;
+    Scheduler::getInstance()->start();
 }

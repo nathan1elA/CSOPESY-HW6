@@ -18,17 +18,24 @@ class Process {
         std::string getProcessName();
         uint32_t getInstructionSize();
         uint32_t getLineNumber();
+        uint8_t getCoreNumber();
+        std::string getCreationTime();  // ADD THIS
 
     private:
         void generateInstructions();
+        void writeLogFile();
 
         uint32_t processId;
         std::string name;
         uint8_t coreNumber;
+        std::string logFilePath;
+        std::string creationTime;       // ADD THIS
 
         std::atomic<uint32_t> lineNumber = 1;
+        uint32_t instructionCount = 0;
         uint8_t sleepCounter;
         bool isLooping = 0;
+        bool logFileWritten = false;
 
         std::unique_ptr<InstructionQueue> instructions;
         std::unique_ptr<SymbolTable> symbolTable;

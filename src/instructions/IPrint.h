@@ -4,7 +4,7 @@
 
 class IPrint : public Instruction {
     public:
-        IPrint(std::string msg, SymbolTable& symbolTable, Logger& logger);
+        IPrint(std::string msg, SymbolTable& symbolTable, Logger& logger, uint8_t coreNumber);
 
         void execute() override;
     private:
@@ -12,4 +12,5 @@ class IPrint : public Instruction {
         
         SymbolTable& symbolTable;
         Logger& logger;
+        uint8_t coreNumber;
 };
