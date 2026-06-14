@@ -12,12 +12,12 @@ add_executable(
     src/Scheduler.cpp
     src/Screen.cpp
 
-    instructions/IAdd.cpp
-    instructions/IDeclare.cpp
-    instructions/IFor.cpp
-    instructions/IPrint.cpp
-    instructions/ISleep.cpp
-    instructions/ISubtract.cpp
+    src/instructions/IAdd.cpp
+    src/instructions/IDeclare.cpp
+    src/instructions/IFor.cpp
+    src/instructions/IPrint.cpp
+    src/instructions/ISleep.cpp
+    src/instructions/ISubtract.cpp
 )
 
-include_directories(app PRIVATE src src/instructions)
+target_include_directories(app PRIVATE src src/instructions)
